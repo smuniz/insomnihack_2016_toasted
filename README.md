@@ -24,9 +24,7 @@ Part 1.1 - Initial approach
 ===========================
 
 What you download is an ARM 32-bits binary (along with the qemu-arm
-needed to execute it locally). When you run it you'll be asked for a
-Part 4 - Setting debugging output
-passphrase.  So the first thing to look for after IDA analyzed the binary is the passphrase to log-in to the 'service'. You can easily find it in the 'strings' windows by:
+needed to execute it locally). When you run it you'll be asked for a passphrase.  So the first thing to look for after IDA analyzed the binary is the passphrase to log-in to the 'service'. You can easily find it in the 'strings' windows by:
 
 1. xref-sing the string '"Passphrase : "'  which is the sting displayed when trying to login.
 2. if you follow it you'll notice that if tries to read 32 bytes
@@ -41,7 +39,7 @@ Part 1.2 - Getting debugging information
 ========================================
 
 
-Then you'll be promped for a slide number becuase, obviusly, this is a super cool toaster 2.0 kickstarted-founded so it's basically a cool device :)
+Then you'll be promped for a slice number becuase, obviously, this is a super cool toaster 2.0 kickstarted-founded so it's basically a cool device :)
 
 The main function does just a couple of relevant things so now we'll proceed to the diassembly:
 
