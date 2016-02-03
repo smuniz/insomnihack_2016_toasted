@@ -3,10 +3,10 @@
 Write-up for Insomnihack 2016 Toasted challenge
 
 1. Information
-    1.1 - Initial approach
-    1.2 - Getting debugging information
-    1.3 - Handling the slices
-    1.4 - Setting debugging output
+1.1 Initial approach
+1.2 Getting debugging information
+1.3 Handling the slices
+1.4 Setting debugging output
 2. Force debug output
 3. Leak stack content
 4. Write shellcode
@@ -45,7 +45,7 @@ Then you'll be promped for a slide number becuase, obviusly, this is a super coo
 
 The main function does just a couple of relevant things so now we'll proceed to the diassembly:
 
-```
+```C
   char pBuffer[256];
 
   memset(pBuffer, 0, 256);
@@ -82,7 +82,8 @@ Part 1.3 - Handling the slices
 
 This is the function where the user input for every bread slice is handled (remember this is a toaster :)
 The function has the following deifinition:
-```
+
+```C
  int handle_slices(char *pBuffer, int i_show_status);
 ```
 
@@ -95,7 +96,7 @@ As you can see:
 
 At this point the we have to deal with the diassembly of the funtion handle_slices() which is the following:
 
-```
+```C
 int handle_slices(char *pBuffer, int i_show_status)
 {
   pBuffer_cpy = pBuffer;
