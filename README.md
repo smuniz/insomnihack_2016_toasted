@@ -3,10 +3,10 @@
 Write-up for Insomnihack 2016 Toasted challenge
 
 1. Information
-1.1 Initial approach
-1.2 Getting debugging information
-1.3 Handling the slices
-1.4 Setting debugging output
+    1. Initial approach
+    2. Getting debugging information
+    3. Handling the slices
+    4. Setting debugging output
 2. Force debug output
 3. Leak stack content
 4. Write shellcode
@@ -15,7 +15,7 @@ To a mighty soul
 ================
 
 
-    Following is an explanation of what the challenge does. The challenge is run at toasted.insomnihack.ch:7200 and the objective is to read the file /flag . They also warm that "FYI Runs chrooted so
+Following is an explanation of what the challenge does. The challenge is run at toasted.insomnihack.ch:7200 and the objective is to read the file /flag . They also warm that "FYI Runs chrooted so
 forget about your execve shellcodes." so don't try to escape the chroot,
 
 JUST READ THE DAMN FILE :)
@@ -173,7 +173,7 @@ ENTERs a loop 259 times where it:
 
 Following is a good pseudocode description of it:
 
-```
+```C
     cur_toast = pBuffer[toast_n];
     rval = ran();
     r1 = rval & 0xFF;    //t1 = r1;
@@ -192,7 +192,7 @@ The main error here is that scanf() function is used to read the user input as a
 
 According to scanf() documentation, negative values can be obtained by issuing the minus sign ('-') so we can use this to reference values in the stack at lower addresses than our array base. I.e. by issuing a -1 as the slice number we'll reference the byte before the array starts, -2 the byte before this and so on.
 
-Knowing the stack layout we can use this trick to send the value -64 to overwrite an integer value which is checked to be non-zero so the debug content is displayed on each loop. It doesn't matter the value, just that it's not zero.
+Knowing the stack layout we can use this trick to send the value *-64* to overwrite an integer value which is checked to be non-zero so the debug content is displayed on each loop. It doesn't matter the value, just that it's not zero.
 
 You should see something like this:
 ```
@@ -226,7 +226,7 @@ At this point we'll have enabled the debug information.
 
 Now the following trick is to overwrite the pointer to the 256 bytes array containing the slice information. What we'll do is to overwrite the less significant byte with a zero to we'll move the pointer base to a lower stack address and hence on each loop (when the slice array is printed due to our previous trick) we'll end up obtaining the current stack content.
 
-To achieve this we have to send the value -60 and hope that the result from rand() + the current value will be more than 256 so it'll be overwritten with a 0. Otherwise we have to disconnect and do this again.
+To achieve this we have to send the value *-60* and hope that the result from rand() + the current value will be more than 256 so it'll be overwritten with a 0. Otherwise we have to disconnect and do this again.
 
 You should see something like this:
 ```
