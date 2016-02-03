@@ -1,4 +1,5 @@
-# insomnihack_2016_toasted
+# InsomniHack 2016 - Toasted
+
 Write-up for Insomnihack 2016 Toasted challenge
 
 Part 1 - Initial approach
@@ -40,8 +41,6 @@ Then you'll be promped for a slide number becuase, obviusly, this is a super coo
 The main function does just a couple of relevant things so now we'll proceed to the diassembly:
 
 ```
-//----------------------------  begin of disassmbly -------------------------//
-
   char pBuffer[256];
 
   memset(pBuffer, 0, 256);
@@ -60,8 +59,6 @@ The main function does just a couple of relevant things so now we'll proceed to 
   if ( canary_cpy != gcanary )
     exit(-1);
   return 0;
-
-//----------------------------  end of disassmbly -------------------------//
 
 ```
 
@@ -94,7 +91,6 @@ As you can see:
 At this point the we have to deal with the diassembly of the funtion handle_slices() which is the following:
 
 ```
-//----------------------------  begin of disassmbly -------------------------//
 int handle_slices(char *pBuffer, int i_show_status)
 {
   pBuffer_cpy = pBuffer;
@@ -126,51 +122,30 @@ int handle_slices(char *pBuffer, int i_show_status)
     {
       rand_init = printf("Toasting %d!\n", i_input_toast_n);
       i_indexed_toast = (unsigned __int8)pBuffer_cpy[i_input_toast_n];
-      rand_res = rand___UNUSED_PARAM(rand_init);
-      ////////////////// FUCK HEX-RAYS //////////////
-      /***************************************
-      i_indexed_toast_plus_ = i_indexed_toast
-                            + (unsigned __int8)(rand_res + ((unsigned
-                                int)(rand_res >> 31) >> 24))
-                            - ((unsigned int)(rand_res >> 31) >> 24);
-      if ( (signed int)(i_indexed_toast
-                      + (unsigned __int8)(rand_res + ((unsigned
-                        int)(rand_res >> 31) >> 24))
-                      - ((unsigned int)(rand_res >> 31) >> 24)) <= 256 )
-      ***************************************/
 
       cur_toast = pBuffer[toast_n];
-      rval = rand___UNUSED_PARAM();
-      t = 0;        //t = (rval >> 31) >> 24;
-      r1 = rval & 0xF;  //t1 = r1;
+      rval = rand();
+      r1 = rval & 0xFF;
       new_toast_val = cur_toast + r1;
-      if (new_toast_val <= 256) {
-            pBuffer[toast_n] = t2 & 0xFF;
-      }
-      else {
-            pBuffer[toast_n] = 0x0;
-            // overheat
-      }
-      /********
+
+      if (new_toast_val <= 256)
       {
-            pBuffer_cpy[i_input_toast_n] = i_indexed_toast_plus_;
+            pBuffer[toast_n] = t2 & 0xFF;
       }
       else
       {
-        rand_res = puts("Detected bread overheat, replacing");
-        pBuffer_cpy[i_input_toast_n] = 0;
-        ++overheat;
+            puts("Detected bread overheat, replacing");
+            pBuffer[toast_n] = 0x0;
+            ++overheat;
       }
-      *********/
+
       ++i_tries;
     
-  }
-  while ( i_tries <= 259 );
+  } while ( i_tries <= 259 );
+
   if ( canary_cpy != gcanary )
     exit(-1);
   return rand_res;
-
-//----------------------------  end of disassmbly -------------------------//
 
 ```
 
@@ -216,21 +191,11 @@ address following it so according the following disassembly:
 .text:00008C82 07 F1 0C 02   ADD.W           R2, R7, #0xC
 .text:00008C86 02 F1 04 02   ADD.W           R2, R2, #4
 .text:00008C8A 10 46         MOV             R0, R2                ; pBuffer
-.text:00008C8C 19 46         MOV             R1, R3                ;
-i_show_status
+.text:00008C8C 19 46         MOV             R1, R3                ; i_show_status
 .text:00008C8E FF F7 C7 FE   BL              handle_bread
-.text:00008C92 4D F2 8C 20+  MOV             R0, #aWellYouVeHadYo  ;
-"Well, you've had your toasting frenzy!\"...
+.text:00008C92 4D F2 8C 20+  MOV             R0, #aWellYouVeHadYo  ; "Well, you've had your toasting frenzy!\"...
 .text:00008C9A 00 F0 79 FF   BL
 
-If you enter -20 then you'll overwrite value 0x0008C92 store on the
-stack with whatever you've got from the rand() call after being processed.
-
-You can do the check with the online server and you'll notice that it
-crashes the same way as local and the crash is basically a QEMU CRASH
-!!!!!!!!!
-
-    ~cheers, topo
 
 
 F6FFF338  00000000  MEMORY:00000000
@@ -250,3 +215,6 @@ F6FFF36C  00000001  MEMORY:00000001
 F6FFF370  DD0BBDFE  MEMORY:DD0BBDFE
 F6FFF374  00000000  MEMORY:00000000
 F6FFF378  00000000  MEMORY:00000000
+
+    ~cheers, topo
+
